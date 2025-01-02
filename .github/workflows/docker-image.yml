@@ -19,7 +19,9 @@ jobs:
 
       - name: Get release version
         id: get_version
-        run: echo "::set-output name=version::$(jq -r .tag_name < $GITHUB_EVENT_PATH)"
+        run: |
+          VERSION=$(jq -r .tag_name < $GITHUB_EVENT_PATH || echo "latest")
+          echo "::set-output name=version::$VERSION"
 
       - name: Build multi-architecture Docker image
         run: |
