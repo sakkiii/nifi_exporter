@@ -33,3 +33,26 @@ jobs:
           docker buildx build --platform linux/amd64,linux/arm64 \
             -t sakkiii/nifi_exporter:${{ steps.get_tag.outputs.tag }} \
             --push .
+  release:
+    name: Create Release
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Create Git Tag if Missing
+        run: |
+          if [ -z "$(git tag --list ${{ github.event.release.tag_name }})" ]; then
+            git tag ${{ github.event.release.tag_name }}
+            git push origin ${{ github.event.release.tag_name }}
+          fi
+
+      - name: Publish GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.event.release.tag_name }}
+          name: Release ${{ github.event.release.tag_name }}
+          body: |
+            Release notes for ${{ github.event.release.tag_name }}.
