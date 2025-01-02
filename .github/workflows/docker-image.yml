@@ -23,10 +23,6 @@ jobs:
 
       - name: Build multi-architecture Docker image
         run: |
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           docker buildx create --use
           docker buildx build --platform linux/amd64,linux/arm64 -t sakkiii/nifi_exporter:${{ steps.get_version.outputs.version }} --push .
-
-      - name: Push Docker image to Docker Hub
-        run: |
-          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker push sakkiii/nifi_exporter:${{ steps.get_version.outputs.version }}
