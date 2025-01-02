@@ -21,10 +21,11 @@ jobs:
         id: get_version
         run: echo "::set-output name=version::$(jq -r .tag_name < $GITHUB_EVENT_PATH)"
 
-      - name: Build Docker image with version
+      - name: Build multi-architecture Docker image
         run: |
-          docker build -t sakkiii/nifi_exporter:${{ steps.get_version.outputs.version }} .
-      
+          docker buildx create --use
+          docker buildx build --platform linux/amd64,linux/arm64 -t sakkiii/nifi_exporter:${{ steps.get_version.outputs.version }} --push .
+
       - name: Push Docker image to Docker Hub
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
