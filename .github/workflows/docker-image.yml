@@ -18,13 +18,18 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Get release version
-        id: get_version
+        id: get_tag
         run: |
-          VERSION=$(jq -r .tag_name < $GITHUB_EVENT_PATH || echo "latest")
-          echo "::set-output name=version::$VERSION"
+          if [ "${{ github.event_name }}" = "release" ]; then
+            echo "::set-output name=tag::$(jq -r .release.tag_name < $GITHUB_EVENT_PATH)"
+          else
+            echo "::set-output name=tag::latest"
+          fi
 
-      - name: Build multi-architecture Docker image
+      - name: Build and push multi-architecture Docker image
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           docker buildx create --use
-          docker buildx build --platform linux/amd64,linux/arm64 -t sakkiii/nifi_exporter:${{ steps.get_version.outputs.version }} --push .
+          docker buildx build --platform linux/amd64,linux/arm64 \
+            -t sakkiii/nifi_exporter:${{ steps.get_tag.outputs.tag }} \
+            --push .
