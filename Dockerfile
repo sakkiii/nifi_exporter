@@ -1,10 +1,9 @@
-FROM python:3.8-alpine AS prod
+FROM python:3.9-alpine AS prod
 
 RUN mkdir /app/
 WORKDIR /app/
 
 COPY ./src/requirements.txt /app/requirements.txt
-RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 COPY ./src/ /app/
