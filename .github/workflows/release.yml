@@ -1,4 +1,4 @@
-name: Build and Deploy NiFi Exporter
+name: Create Release and build artifacts
 
 on:
   push:

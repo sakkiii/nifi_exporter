@@ -1,4 +1,4 @@
-name: Build and Deploy NiFi Exporter
+name: Build & Push on Github 
 
 on:
   push:
